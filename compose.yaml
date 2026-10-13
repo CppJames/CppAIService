@@ -1,0 +1,9 @@
+services:
+  ai-httpserver:
+    build: .
+    image: ai-httpserver-2:local
+    container_name: ai-httpserver-2
+    ports:
+      - "8116-8117:8116-8117"
+    volumes:
+      - ./.env:/root/httpserver_vsersion2/.env:ro

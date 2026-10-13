@@ -1,5 +1,39 @@
 #  C++ AI应用开发项目 - AI应用服务平台 第二版
 
+## Docker 启动
+
+首次克隆项目时可执行 `cp .env.example .env` 创建配置文件。
+在项目根目录 `.env` 中按需填写配置：
+
+| 功能 | 配置项 |
+| --- | --- |
+| 阿里百炼聊天、MCP | `DASHSCOPE_API_KEY` |
+| 阿里百炼 RAG | `DASHSCOPE_API_KEY`、`Knowledge_Base_ID` |
+| 百度语音合成 | `BAIDU_CLIENT_ID`、`BAIDU_CLIENT_SECRET` |
+| 豆包聊天 | `DOUBAO_API_KEY` |
+
+配置为空时，启动脚本会提示缺失项并继续启动基础服务，便于先访问网页；
+对应的 AI 功能需要有效配置才能使用。
+配置采用 Bash 的 `KEY=value` 格式，含特殊字符的值请使用单引号包裹。
+
+```bash
+docker compose up -d --build
+docker compose logs -f
+```
+
+基于 `huanheart/ai-service-based-on-http-framework-2` 构建，容器名为
+`ai-httpserver-2`，服务端口为 `8117`。Dockerfile 将 `start.sh` 复制到
+`/root/httpserver_vsersion2`，容器启动时自动执行该脚本：加载只读挂载的
+`.env`，启动 MySQL、RabbitMQ，再运行镜像内已有的 `build/http_server`。
+本 Dockerfile 沿用基础镜像的程序，不编译本地源码。
+配置通过导出的环境变量供 C++ 的 `std::getenv` 读取。
+`.env` 不提交到 Git，也不包含在镜像构建上下文中。
+
+修改 `.env` 后执行 `docker compose restart` 重新加载。
+修改 `start.sh` 或 `Dockerfile` 后执行 `docker compose up -d --build`，
+将改动重新构建到镜像中。启动后可访问 `http://localhost:8117`。
+本地已编译且安装相关服务时，也可执行 `bash start.sh`。
+
 > **本项目目前只在[知识星球](https://programmercarl.com/other/kstar.html)答疑并维护**。
 
 在9月份我们发布了[C++AI应用服务平台（第一版）](https://programmercarl.com/other/project_http_ai.html) 这个项目。
